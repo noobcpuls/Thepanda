@@ -1,14 +1,18 @@
-import {createGlobalStyle } from "styled-components";
-import { robotoFontFace } from "./fontFaces";
+import { createGlobalStyle } from "styled-components";
+import { pretendardFontFace } from "./fontFaces";
 
 export const GlobalStyle = createGlobalStyle`
 
-    ${robotoFontFace}
+    ${pretendardFontFace}
 
-    body {
-        margin: 0 !important;
-        padding: 0 !important;
-        font-family: Roboto;
+    :root {
+        font-size: 15px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: Pretendard;
     }
 
     a {

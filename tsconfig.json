@@ -13,6 +13,6 @@
       "@/shared/*" :   ["src/shared/*"],
       "@/renderer/*" : ["src/renderer/*"],
       "@/main/*" :     ["src/main/*"]
-    }
+    },
   }
 }

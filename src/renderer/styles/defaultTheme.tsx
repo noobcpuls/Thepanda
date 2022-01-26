@@ -2,33 +2,59 @@ import {DefaultTheme} from "styled-components";
 
 // The .tsx extension in this file is to allow color picker extension in visual code. Change to .ts if you want.
 
-const defaultTheme: DefaultTheme = {
+export const defaultTheme: DefaultTheme = {
     colors: {
-        background:   "#f1f1f1",
-        foreground:   "#111111",
+        background:   "#ffffff",
+        foreground:   "#edf2f4",
         brand1: {
-            main:     "#116f8b",
-            contrast: "#dae9ee"
+            main:     "#98f5e1",
+            contrast: "#b9fbc0"
         },
         brand2: {
-            main:     "#460261",
-            contrast: "#e3d6e9"
+            main:     "#dee2e6",
+            contrast: "#ced4da"
         },
         primary: {
-            main:     "#045f7a",
-            contrast: "#d7f0f8"
+            main:     "#52b788",
+            contrast: "#161a1d"
         },
         danger: {
-            main:     "#610202",
-            contrast: "#f5dcdc"
+            main:     "#ff595e",
+            contrast: ""
         },
         warning: {
-            main:     "#c2c500",
-            contrast: "#fdfde0"
+            main:     "#ffca3a",
+            contrast: ""
         },
         
     }
     
 };
-
-export default defaultTheme;
+export const darkTheme: DefaultTheme = {
+    colors: {
+        background:   "#343a40",
+        foreground:   "#212529",
+        brand1: {
+            main:     "#43aa8b",
+            contrast: "#90be6d"
+        },
+        brand2: {
+            main:     "#495057",
+            contrast: "#6c757d"
+        },
+        primary: {
+            main:     "#52b788",
+            contrast: "#faf9f9"
+        },
+        danger: {
+            main:     "#ff006e",
+            contrast: ""
+        },
+        warning: {
+            main:     "#ffbe0b",
+            contrast: ""
+        },
+        
+    }
+    
+};

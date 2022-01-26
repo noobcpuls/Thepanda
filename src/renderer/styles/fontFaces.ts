@@ -1,32 +1,60 @@
 import { css } from "styled-components"
-import RobotoBoldItalic   from "@fontsource/roboto/files/roboto-latin-ext-700-italic.woff"
-import RobotoBoldNormal   from "@fontsource/roboto/files/roboto-latin-ext-700-normal.woff"
-import RobotoNormalItalic from "@fontsource/roboto/files/roboto-latin-ext-300-italic.woff"
-import RobotoNormalNormal from "@fontsource/roboto/files/roboto-latin-ext-300-normal.woff"
+import PretendardBold from 'node_modules/@fontsource/woff2/Pretendard-Bold.woff2'
+import PretendardExtraBold from 'node_modules/@fontsource/woff2/Pretendard-ExtraBold.woff2'
+import PretendardExtraLight from 'node_modules/@fontsource/woff2/Pretendard-ExtraLight.woff2'
+import PretendardLight from 'node_modules/@fontsource/woff2/Pretendard-Light.woff2'
+import PretendardMedium from 'node_modules/@fontsource/woff2/Pretendard-Medium.woff2'
+import PretendardSemiBold from 'node_modules/@fontsource/woff2/Pretendard-SemiBold.woff2'
+import PretendardThin from 'node_modules/@fontsource/woff2/Pretendard-Thin.woff2'
+import PretendardRegular from 'node_modules/@fontsource/woff2/Pretendard-Regular.woff2'
 
-export const robotoFontFace = css`
+export const pretendardFontFace = css`
     @font-face {
-        font-family: 'Roboto';
+        font-family: 'Pretendard';
         font-weight: normal;
         font-style: normal;
-        src: url(${RobotoNormalNormal}) format('woff');
+        src: url(${PretendardRegular}) format('woff2');
     }
     @font-face {
-        font-family: 'Roboto';
-        font-weight: normal;
-        font-style: italic;
-        src: url(${RobotoNormalItalic}) format('woff');
-    }
-    @font-face {
-        font-family: 'Roboto';
-        font-weight: bold;
+        font-family: 'Pretendard';
+        font-weight: 1000;
         font-style: normal;
-        src: url(${RobotoBoldNormal}) format('woff');
+        src: url(${PretendardExtraBold}) format('woff2');
     }
     @font-face {
-        font-family: 'Roboto';
-        font-weight: bold;
-        font-style: italic;
-        src: url(${RobotoBoldItalic}) format('woff');
+        font-family: 'Pretendard';
+        font-weight: 200;
+        font-style: normal;
+        src: url(${PretendardExtraLight}) format('woff2');
+    }
+    @font-face {
+        font-family: 'Pretendard';
+        font-weight: 800;
+        font-style: normal;
+        src: url(${PretendardBold}) format('woff2');
+    }
+    @font-face {
+        font-family: 'Pretendard';
+        font-weight: 400;
+        font-style: normal;
+        src: url(${PretendardLight}) format('woff2');
+    }
+    @font-face {
+        font-family: 'Pretendard';
+        font-weight: 500;
+        font-style: normal;
+        src: url(${PretendardMedium}) format('woff2');
+    }
+    @font-face {
+        font-family: 'Pretendard';
+        font-weight: 700;
+        font-style: normal;
+        src: url(${PretendardSemiBold}) format('woff2');
+    }
+    @font-face {
+        font-family: 'Pretendard';
+        font-weight: 300;
+        font-style: normal;
+        src: url(${PretendardThin}) format('woff2');
     }
 `;

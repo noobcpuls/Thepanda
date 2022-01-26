@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, session } from "electron";
 import { initialize, enable } from "@electron/remote/main";
 
 declare const ENVIRONMENT: String;
@@ -10,12 +10,14 @@ const HTML_FILE_PATH = "renderer/index.html";
 function createWindow(): BrowserWindow | null {
     
     let win: BrowserWindow | null = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1200,
+        height: 720,
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false
-        }
+            contextIsolation: false,
+            devTools: IS_DEV,
+        },
+        center: true,
     });
 
     if (IS_DEV) {
@@ -36,6 +38,21 @@ app.whenReady()
         let win = createWindow();
         if (!win) throw Error("BrowserWindow is null. Check main process initialization!");
         initialize();
+
+        win.webContents.session.webRequest.onBeforeSendHeaders(
+            (details, callback) => {
+              callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
+            },
+          );
+        
+          win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+            callback({
+              responseHeaders: {
+                'Access-Control-Allow-Origin': ['*'],
+                ...details.responseHeaders,
+              },
+            });
+          });
 
         win.maximize();
         enable(win.webContents);
