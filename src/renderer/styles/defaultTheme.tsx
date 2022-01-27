@@ -7,15 +7,15 @@ export const defaultTheme: DefaultTheme = {
         background:   "#ffffff",
         foreground:   "#edf2f4",
         brand1: {
-            main:     "#98f5e1",
-            contrast: "#b9fbc0"
+            main:   "#98f5e1",
+            contrast: "#b9fbc0",
         },
         brand2: {
             main:     "#dee2e6",
             contrast: "#ced4da"
         },
         primary: {
-            main:     "#52b788",
+            main:    "#00f5d4",
             contrast: "#161a1d"
         },
         danger: {
@@ -36,14 +36,14 @@ export const darkTheme: DefaultTheme = {
         foreground:   "#212529",
         brand1: {
             main:     "#43aa8b",
-            contrast: "#90be6d"
+            contrast: "#90be6d",
         },
         brand2: {
             main:     "#495057",
             contrast: "#6c757d"
         },
         primary: {
-            main:     "#52b788",
+            main:    "#52b788",
             contrast: "#faf9f9"
         },
         danger: {
