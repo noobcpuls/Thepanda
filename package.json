@@ -68,11 +68,11 @@
     "build:prod": "npx webpack --env production",
     "start": "npx concurrently \"npx webpack serve --config-name renderer --env hot-reload\" \"npx webpack --config-name main && npx electron ./dist/main-process.js\" --kill-others --kill-others-on-fail\" \"react-scripts start",
     "start:prod": "npm run build:prod && npx electron ./dist/main-process.js",
-    "pack": "npx rimraf ./pack && npm run build:prod && npx electron-packager ./dist --out ./pack --overwrite --asar --platform win32 --arch x64"
+    "pack": "npx rimraf ./pack && npm run build:prod && npx electron-packager ./dist --out ./pack --overwrite --asar"
   },
   "devDependencies": {
     "@electron/remote": "^2.0.1",
-    "@fontsource/roboto": "^4.5.1",
+    "@fontsource/woff2": "^1.2.1",
     "@types/qrcode.react": "^1.0.2",
     "axios": "^0.25.0",
     "electron": "^16.0.6",

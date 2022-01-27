@@ -2,7 +2,7 @@ import React, { Fragment, useState } from 'react';
 import {dialog} from "@electron/remote";
 import fs from "fs";
 
-export function ExampleView2() {
+export function GradeManage() {
 
     const [text, setText] = useState<string|null>(null);
 

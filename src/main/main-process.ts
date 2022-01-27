@@ -12,6 +12,8 @@ function createWindow(): BrowserWindow | null {
     let win: BrowserWindow | null = new BrowserWindow({
         width: 1200,
         height: 720,
+        minWidth: 500,
+        minHeight: 400,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,

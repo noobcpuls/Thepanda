@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import QRCode from 'qrcode.react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-const JSZipUtils = require('../core/jszip-utils.js')
+const JSZipUtils = require('../core/jszip-utils.js');
 
 export function Qrcodes() {
     interface playlist {
@@ -24,6 +24,9 @@ export function Qrcodes() {
     }
 
     const youtubePl =(url:string):void => {
+        if (text === '') {
+            return;
+        }
         const newUrl = "https://www.youtube.com/watch?v=";
         const isYT = url.startsWith('https://www.youtube.com');
         const isPl = url.indexOf('&list=') !== -1;

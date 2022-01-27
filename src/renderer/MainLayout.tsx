@@ -4,17 +4,17 @@ import styled, { ThemeProvider } from 'styled-components';
 import { defaultTheme, darkTheme }from '@/renderer/styles/defaultTheme';
 import { GlobalStyle } from "@/renderer/styles/GlobalStyle";
 import { Qrcodes } from '@/renderer/views/Qrcodes';
-import { ExampleView2 } from '@/renderer/views/ExampleView2';
+import { GradeManage } from '@/renderer/views/GradeManage';
 import HomeView from '@/renderer/views/HomeView';
 import pandalogo from '@/renderer/resources/images/pandalogo.png';
 import { ThemeContextDark } from './core/context';
-import Config from './views/Config';
+import Preference from './views/Preference';
 
 export default function MainLayout() {
     const menus = [
       { name: "홈", path: "/" },
       { name: "QR 코드 생성", path: "/qrcodes" },
-      { name: "Example 2", path: "/example-view-2" },
+      { name: "학생 성적관리 V1", path: "/example-view-2" },
       { name: "설정", path: "/config" },
     ];
     
@@ -43,8 +43,8 @@ export default function MainLayout() {
                         <Body>
                             <Routes>
                                 <Route path="/qrcodes" element={<Qrcodes />} />
-                                <Route path="/example-view-2" element={<ExampleView2 />} />
-                                <Route path="/config" element={<Config />} />
+                                <Route path="/example-view-2" element={<GradeManage />} />
+                                <Route path="/config" element={<Preference />} />
                                 <Route path="/" element={<HomeView />} />
                             </Routes>
                         </Body>

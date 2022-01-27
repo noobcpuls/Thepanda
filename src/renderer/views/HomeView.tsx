@@ -48,6 +48,12 @@ export const PP = styled.p`
     color: ${props => props.theme.colors.primary.contrast};
 `
 
+export const PH = styled.p`
+    font-size: 1.6rem;
+    font-weight: 200;
+    color: ${props => props.theme.colors.primary.contrast};
+`
+
 const PP1 = styled(PP)`
     font-size: 1.1rem;
     margin: 2.4rem 0;
