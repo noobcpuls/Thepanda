@@ -14,8 +14,8 @@ export default function MainLayout() {
     const menus = [
       { name: "홈", path: "/" },
       { name: "QR 코드 생성", path: "/qrcodes" },
-      { name: "학생 성적관리 V1", path: "/example-view-2" },
-      { name: "설정", path: "/config" },
+      { name: "학생 성적관리 V1", path: "/grade-management-v1" },
+      { name: "설정", path: "/pref" },
     ];
     
     const { isDark } = useContext(ThemeContextDark);
@@ -43,8 +43,8 @@ export default function MainLayout() {
                         <Body>
                             <Routes>
                                 <Route path="/qrcodes" element={<Qrcodes />} />
-                                <Route path="/example-view-2" element={<GradeManage />} />
-                                <Route path="/config" element={<Preference />} />
+                                <Route path="/grade-management-v1" element={<GradeManage />} />
+                                <Route path="/pref" element={<Preference />} />
                                 <Route path="/" element={<HomeView />} />
                             </Routes>
                         </Body>
