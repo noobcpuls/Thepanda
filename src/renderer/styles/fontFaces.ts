@@ -1,12 +1,12 @@
 import { css } from "styled-components"
-import PretendardBold from 'node_modules/@fontsource/woff2/Pretendard-Bold.woff2'
-import PretendardExtraBold from 'node_modules/@fontsource/woff2/Pretendard-ExtraBold.woff2'
-import PretendardExtraLight from 'node_modules/@fontsource/woff2/Pretendard-ExtraLight.woff2'
-import PretendardLight from 'node_modules/@fontsource/woff2/Pretendard-Light.woff2'
-import PretendardMedium from 'node_modules/@fontsource/woff2/Pretendard-Medium.woff2'
-import PretendardSemiBold from 'node_modules/@fontsource/woff2/Pretendard-SemiBold.woff2'
-import PretendardThin from 'node_modules/@fontsource/woff2/Pretendard-Thin.woff2'
-import PretendardRegular from 'node_modules/@fontsource/woff2/Pretendard-Regular.woff2'
+import PretendardBold from '../resources/fonts/Pretendard-Bold.woff2'
+import PretendardExtraBold from '../resources/fonts/Pretendard-ExtraBold.woff2'
+import PretendardExtraLight from '../resources/fonts/Pretendard-ExtraLight.woff2'
+import PretendardLight from '../resources/fonts/Pretendard-Light.woff2'
+import PretendardMedium from '../resources/fonts/Pretendard-Medium.woff2'
+import PretendardSemiBold from '../resources/fonts/Pretendard-SemiBold.woff2'
+import PretendardThin from '../resources/fonts/Pretendard-Thin.woff2'
+import PretendardRegular from '../resources/fonts/Pretendard-Regular.woff2'
 
 export const pretendardFontFace = css`
     @font-face {

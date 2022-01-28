@@ -4,7 +4,7 @@ import styled from 'styled-components';
 export default function HomeView() {
     
     return (
-        <div>
+        <Md>
             <HH>끝까지 판다, 판다교육입니다.</HH>
             <PP1>최고의 강사가 최고의 강의를, 모든 학생이 최고의 교육을 들을 수 있도록 하겠습니다. 위례 최고의 입시전문학원, 판다교육학원 입니다.</PP1>
             <PP2>교육특구에서 수 많은 학생들을 가르치면서 한가지 생각이 들었습니다. 왜 이곳의 학생들이 더 좋은 학교에 진학할까? 다른 지역에서의 학생들은 어떻게 공부하고 있을까? 온라인 수업을 하면서 이 궁금증은 어느정도 해결되었습니다.</PP2>
@@ -32,9 +32,13 @@ export default function HomeView() {
             <PP2>
                 개별 다운로드 : QR 코드를 변환하면 화면상에 각각의 QR 코드가 나옵니다. QR 코드를 눌러 다운로드하거나 X 버튼을 눌러 개별 삭제할 수 있습니다.
             </PP2>
-        </div>
+        </Md>
     );
 }
+
+export const Md = styled.div `
+    padding: 32px;
+`
 
 export const HH = styled.h1`
     font-size: 2.2rem;

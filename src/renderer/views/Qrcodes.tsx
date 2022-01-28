@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { HH, PP } from './HomeView';
+import { HH, PP, Md } from './HomeView';
 import { YouTube } from 'youtube-sr';
 import styled from 'styled-components';
 import QRCode from 'qrcode.react';
@@ -29,7 +29,7 @@ export function Qrcodes() {
         }
         const newUrl = "https://www.youtube.com/watch?v=";
         const isYT = url.startsWith('https://www.youtube.com');
-        const isPl = url.indexOf('&list=') !== -1;
+        const isPl = url.indexOf('&list=') !== -1 || url.indexOf('?list=') !== -1;
 
         if (isYT === true && isPl === true) {
             YouTube.getPlaylist(url)
@@ -58,7 +58,7 @@ export function Qrcodes() {
                 }) // all parsable videos
                 .catch(console.error);
         }
-        else if (isYT === true) {
+        else if (isYT === true && isPl === false) {
             YouTube.search(url)
                 .then(res => {
                     const Pl:playlist = {
@@ -93,6 +93,12 @@ export function Qrcodes() {
                 Pl.title = sliceTitle;
             }
             setUrlist([...urlist, Pl]);
+        }
+    }
+
+    const onKeyEnter = (e:React.KeyboardEvent<HTMLInputElement>):void => {
+        if (e.key == "Enter") {
+            youtubePl(text);
         }
     }
 
@@ -160,11 +166,11 @@ export function Qrcodes() {
     }
 
     return (
-        <div>
+        <Md>
             <HH>QR 코드 생성기</HH>
             <PP1>링크를 입력하여 QR 코드를 얻으세요.</PP1>
             <InputDiv>
-                <InputVal type="text" onChange={handleChange} value={text} placeholder="링크를 입력해주세요."/>
+                <InputVal type="text" onChange={handleChange} onKeyPress={onKeyEnter} value={text} placeholder="링크를 입력해주세요."/>
                 <PButton onClick={()=>youtubePl(text)}>Convert</PButton>
             </InputDiv>
             <ButtonDiv className={urlist.length > 0 ? "active" : "none"}>
@@ -180,7 +186,7 @@ export function Qrcodes() {
                     </QRcodeDiv>
                 ))}
             </QRdiv>
-        </div>
+        </Md>
     );
 
 }

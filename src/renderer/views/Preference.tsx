@@ -13,7 +13,7 @@ export default function Preference(): JSX.Element {
             <PH1>테마</PH1>
             <PrefDiv>
                 <PP1>모드 : </PP1>
-                <ThemeButton onClick={changeTheme}>{isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}</ThemeButton>
+                <ThemeButton onClick={changeTheme}>{isDark ? "다크 모드" : "라이트 모드"}</ThemeButton>
             </PrefDiv>
         </div>
     )
