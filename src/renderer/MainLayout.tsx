@@ -9,12 +9,14 @@ import HomeView from "@/renderer/views/HomeView";
 import pandalogo from "@/renderer/resources/images/pandalogo.png";
 import { ThemeContextDark } from "./core/context";
 import Preference from "./views/Preference";
+import { SendMessage } from "./views/SendMessage";
 
 export default function MainLayout() {
 	const menus = [
 		{ name: "홈", path: "/" },
 		{ name: "QR 코드 생성", path: "/qrcodes" },
-		{ name: "학생 성적관리 V1", path: "/grade-management-v1" },
+		{ name: "주간 학생 성적관리", path: "/grade-management-v1" },
+		{ name: "고등부 문자 발송용", path: "/send-message" },
 		{ name: "설정", path: "/pref" },
 	];
 
@@ -46,11 +48,13 @@ export default function MainLayout() {
 									</StyledNavLink>
 								)
 							)}
+							<EmptyBox />
 						</SidePanel>
 						<Body>
 							<Routes>
 								<Route path="/qrcodes" element={<Qrcodes />} />
 								<Route path="/grade-management-v1" element={<GradeManage />} />
+								<Route path="/send-message" element={<SendMessage />} />
 								<Route path="/pref" element={<Preference />} />
 								<Route path="/" element={<HomeView />} />
 							</Routes>
@@ -104,7 +108,11 @@ const StyledNavLink = styled(NavLink)`
 		background-color: ${(props) => props.theme.colors.brand2.main};
 	}
 	&.active {
-		background: ${(props) => props.theme.colors.brand2.contrast};
+		background: linear-gradient(
+			20deg,
+			${(props) => props.theme.colors.brand1.main},
+			${(props) => props.theme.colors.brand1.contrast}
+		);
 	}
 `;
 

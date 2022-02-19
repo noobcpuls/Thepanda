@@ -5,199 +5,186 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
-import {merge} from "webpack-merge";
+import { merge } from "webpack-merge";
 
 // wraps env vars injected by webpack cli
 interface Env {
-    development: boolean;
-    hotReload: boolean;
+	development: boolean;
+	hotReload: boolean;
 }
 
 function baseConfiguration(env: Env): Configuration {
-    return {
+	return {
+		resolve: {
+			plugins: [new TsconfigPathsPlugin()],
+		},
 
-        resolve: {
-            plugins: [new TsconfigPathsPlugin()]
-        },
+		mode: env.development ? "development" : "production",
 
-        mode: env.development ? "development" : "production",
+		devtool: env.development ? "source-map" : undefined,
 
-        devtool: env.development ? "source-map" : undefined,
-
-        plugins: [
-            new DefinePlugin({
-                "ENVIRONMENT": JSON.stringify(env.development ? "development" : "production")
-            }),
-        ]
-
-    };
-
+		plugins: [
+			new DefinePlugin({
+				ENVIRONMENT: JSON.stringify(
+					env.development ? "development" : "production"
+				),
+			}),
+		],
+	};
 } // end base configuration
 
 function mainConfiguration(env: Env): Configuration {
+	return {
+		name: "main",
 
-    return {
+		context: path.join(__dirname, "src/main"),
 
-        name: "main",
+		target: "electron-main",
 
-        context: path.join(__dirname, "src/main"),
+		mode: env.development ? "development" : "production",
 
-        target: "electron-main",
+		externalsPresets: {
+			electronMain: true,
+		},
 
-        mode: env.development ? "development" : "production",
+		entry: {
+			"main-process": "./main-process.ts",
+		},
 
-        externalsPresets: {
-            electronMain: true
-        },
+		output: {
+			filename: "[name].js",
+			path: path.join(__dirname, "dist"),
+			clean: {
+				keep: /renderer\//,
+			},
+		},
 
-        entry: {
-            "main-process": "./main-process.ts"
-        },
+		module: {
+			rules: [
+				{
+					test: /\.ts$/,
+					exclude: /node_modules/,
+					use: {
+						loader: "babel-loader",
+						options: {
+							presets: ["@babel/preset-typescript"],
+							plugins: ["@babel/plugin-transform-runtime"],
+						},
+					},
+				},
+				{
+					test: /\.svg$/,
+					use: ["@svgr/webpack"],
+				},
+			],
+		},
 
-        output: {
-            filename: "[name].js",
-            path: path.join(__dirname, "dist"),
-            clean: {
-                keep: /renderer\//
-            }
-        },
-
-        module: {
-            rules: [
-                {
-                    test: /\.ts$/,
-                    exclude: /node_modules/,
-                    use: {
-                        loader: "babel-loader",
-                        options: {
-                            presets: [
-                                "@babel/preset-typescript",
-                            ],
-                            plugins: [
-                                "@babel/plugin-transform-runtime"
-                            ]
-                        }
-                    }
-                }
-            ]
-        },
-
-        plugins: [
-            new CopyWebpackPlugin({
-                patterns: ["../../package.json"] // electron packager need this file to pack the application. not needed during development.
-            })
-        ]
-
-    };
+		plugins: [
+			new CopyWebpackPlugin({
+				patterns: ["../../package.json"], // electron packager need this file to pack the application. not needed during development.
+			}),
+		],
+	};
 } // end main configuration
 
 function RendererConfiguration(env: Env): Configuration {
+	const babelConfig = {
+		presets: ["@babel/preset-react", "@babel/preset-typescript"],
+		plugins: [
+			"@babel/plugin-transform-runtime",
+			env.hotReload && require.resolve("react-refresh/babel"),
+		].filter(Boolean),
+	};
 
-    const babelConfig = {
-        presets: [
-            "@babel/preset-react",
-            "@babel/preset-typescript",
-        ],
-        plugins: [
-            "@babel/plugin-transform-runtime",
-            env.hotReload && require.resolve("react-refresh/babel")
-        ].filter(Boolean)
-    };
+	return {
+		name: "renderer",
 
-    return {
+		context: path.join(__dirname, "src/renderer"),
 
-        name: "renderer",
+		target: "electron-renderer",
 
-        context: path.join(__dirname, "src/renderer"),
+		resolve: {
+			extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
+		},
 
-        target: "electron-renderer",
+		externalsPresets: {
+			electronRenderer: true,
+		},
 
-        resolve: {
-            extensions: [".js", ".jsx", ".ts", ".tsx", ".json"]
-        },
+		entry: {
+			"renderer-process": "./renderer-process.tsx",
+		},
 
-        externalsPresets: {
-            electronRenderer: true
-        },
+		output: {
+			filename: "scripts/[name].js",
+			path: path.join(__dirname, "dist", "renderer"),
+			clean: true,
+			globalObject: env.hotReload ? "self" : undefined, // Hot Module Replacement needs this to work. See: // https://stackoverflow.com/questions/51000346/uncaught-typeerror-cannot-read-property-webpackhotupdate-of-undefined
+		},
 
-        entry: {
-            "renderer-process": "./renderer-process.tsx"
-        },
+		module: {
+			rules: [
+				{
+					test: /\.(js|jsx|ts|tsx)$/,
+					exclude: /node_modules/,
+					use: {
+						loader: "babel-loader",
+						options: babelConfig,
+					},
+				},
+				{
+					test: /\.(png|jpe?g|gif|svg)$/,
+					use: {
+						loader: "file-loader",
+						options: {
+							outputPath: "images",
+							name: "[name].[ext]",
+						},
+					},
+				},
+				{
+					test: /\.(ttf|otf|woff2?)$/,
+					use: {
+						loader: "file-loader",
+						options: {
+							outputPath: "fonts",
+							name: "[name].[ext]",
+						},
+					},
+				},
+			],
+		},
 
-        output: {
-            filename: "scripts/[name].js",
-            path: path.join(__dirname, "dist", "renderer"),
-            clean: true,
-            globalObject: env.hotReload ? "self" : undefined, // Hot Module Replacement needs this to work. See: // https://stackoverflow.com/questions/51000346/uncaught-typeerror-cannot-read-property-webpackhotupdate-of-undefined
-        },
+		plugins: [
+			new HtmlWebpackPlugin({
+				template: "index.html",
+			}),
 
-        module: {
-            rules: [
-                {
-                    test: /\.(js|jsx|ts|tsx)$/,
-                    exclude: /node_modules/,
-                    use: {
-                        loader: "babel-loader",
-                        options: babelConfig
-                    }
-                },
-                {
-                    test: /\.(png|jpe?g|gif|svg)$/,
-                    use: {
-                        loader: "file-loader",
-                        options: {
-                            outputPath: "images",
-                            name: "[name].[ext]"
-                        }
-                    }
-                },
-                {
-                    test: /\.(ttf|otf|woff2?)$/,
-                    use: {
-                        loader: "file-loader",
-                        options: {
-                            outputPath: "fonts",
-                            name: "[name].[ext]"
-                        }
-                    }
-                },
+			(env.hotReload &&
+				new ReactRefreshWebpackPlugin()) as WebpackPluginInstance,
+		].filter(Boolean),
 
-            ]
-        },
-
-        plugins: [
-
-            new HtmlWebpackPlugin({
-                template: "index.html",
-            }),
-
-            (env.hotReload && new ReactRefreshWebpackPlugin()) as WebpackPluginInstance,
-
-        ].filter(Boolean),
-
-        devServer: {
-            compress: true,
-            hot: env.hotReload,
-            port: 9000,
-            historyApiFallback: true,
-            devMiddleware: {
-                writeToDisk: true
-            }
-        }
-    };
-
+		devServer: {
+			compress: true,
+			hot: env.hotReload,
+			port: 9000,
+			historyApiFallback: true,
+			devMiddleware: {
+				writeToDisk: true,
+			},
+		},
+	};
 } // end renderer configuration
 
 export default function (e: any) {
+	const env: Env = {
+		development: !e["production"],
+		hotReload: !!e["hot-reload"] && !e["production"],
+	};
 
-    const env: Env = {
-        development: !e["production"],
-        hotReload: !!e["hot-reload"] && !e["production"],
-    };
+	const baseConfig = baseConfiguration(env);
+	const mainConfig = merge(baseConfig, mainConfiguration(env));
+	const rendererConfig = merge(baseConfig, RendererConfiguration(env));
 
-    const baseConfig = baseConfiguration(env);
-    const mainConfig = merge(baseConfig, mainConfiguration(env));
-    const rendererConfig = merge(baseConfig, RendererConfiguration(env));
-
-    return [mainConfig, rendererConfig];
+	return [mainConfig, rendererConfig];
 }

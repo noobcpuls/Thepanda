@@ -13,6 +13,11 @@ export const GlobalStyle = createGlobalStyle`
         margin: 0;
         padding: 0;
         font-family: Pretendard;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: -moz-none;
+        -o-user-select: none;
+        user-select: none;
     }
 
     a {
@@ -23,4 +28,3 @@ export const GlobalStyle = createGlobalStyle`
         }
     }
 `;
-
