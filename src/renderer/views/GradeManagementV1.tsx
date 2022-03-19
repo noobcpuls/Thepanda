@@ -235,8 +235,8 @@ export function GradeManage() {
         }
       });
       const avg: number = isPercent
-        ? roundToTwo(total / exist, 100)
-        : roundToTwo(total / exist, maxsco);
+        ? roundToTwo(total / exist, maxsco)
+        : Math.round((total / exist + Number.EPSILON) * 100) / 100;
       sheet.mergeCells(
         `${Al(leng)}${rowIndex + 4}:${Al(leng + 2)}${rowIndex + 4}`
       );
