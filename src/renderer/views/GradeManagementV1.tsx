@@ -8,18 +8,12 @@ import { FaTrash } from "react-icons/fa";
 import { RiPencilFill } from "react-icons/ri";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import { stdout } from "process";
+import InputModal from "../components/InputModal";
 
 export function GradeManage() {
   interface student {
     id: number;
     grade: number;
-    name: string;
-    score: string;
-  }
-
-  interface rStudent {
-    id: number;
     name: string;
     score: string;
   }
@@ -64,6 +58,7 @@ export function GradeManage() {
               score: "",
             };
             _stud.name = row.getCell(leng + 1).value?.toString() || "";
+            _stud.score = row.getCell(leng + 2).value?.toString() || "";
             _stu.push(_stud);
             nextId.current++;
           }
@@ -78,7 +73,7 @@ export function GradeManage() {
       setIsPercent(
         sheet.getCell("A203").value?.toString() === "false" ? false : true
       );
-      setColor(sheet.getCell("X4").value?.toString() || "");
+      setColor(sheet.getCell("A204").value?.toString() || "");
     } catch (error) {
       console.log(error);
     }
@@ -163,14 +158,32 @@ export function GradeManage() {
         color === "" ? "000000" : color.slice(1).toUpperCase();
       A1.style.font = {
         size: 22,
-        color: { argb: "FF" + fontColor },
         bold: true,
+      };
+      A1.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF" + fontColor },
+        bgColor: { argb: "FF" + fontColor },
       };
 
       sheet.getRow(2).getCell(leng).value = "순위";
       sheet.getRow(2).getCell(leng + 1).value = "이름";
       sheet.getRow(2).getCell(leng + 2).value = "점수";
       sheet.getRow(2).getCell(leng + 3).value = "순위 변동";
+
+      sheet.getRow(2).getCell(leng).style.font = {
+        bold: true,
+      };
+      sheet.getRow(2).getCell(leng + 1).style.font = {
+        bold: true,
+      };
+      sheet.getRow(2).getCell(leng + 2).style.font = {
+        bold: true,
+      };
+      sheet.getRow(2).getCell(leng + 3).style.font = {
+        bold: true,
+      };
 
       for (let i = 0; i < stu.length; i++) {
         const row = sheet.getRow(i + 3);
@@ -226,22 +239,24 @@ export function GradeManage() {
         }
       }
 
-      let total: number = 0;
-      let exist: number = 0;
-      stu.forEach((stud) => {
-        if (stud.grade > 0) {
-          total += Number(stud.score);
-          exist++;
-        }
-      });
-      const avg: number = isPercent
-        ? roundToTwo(total / exist, maxsco)
-        : Math.round((total / exist + Number.EPSILON) * 100) / 100;
-      sheet.mergeCells(
-        `${Al(leng)}${rowIndex + 4}:${Al(leng + 2)}${rowIndex + 4}`
-      );
-      sheet.getCell(`${Al(leng)}${rowIndex + 4}`).value = "전체 평균";
-      sheet.getCell(`${Al(leng + 3)}${rowIndex + 4}`).value = avg;
+      if (stu.length > 0) {
+        let total: number = 0;
+        let exist: number = 0;
+        stu.forEach((stud) => {
+          if (stud.grade > 0) {
+            total += Number(stud.score);
+            exist++;
+          }
+        });
+        const avg: number = isPercent
+          ? roundToTwo(total / exist, maxsco)
+          : Math.round((total / exist + Number.EPSILON) * 100) / 100;
+        sheet.mergeCells(
+          `${Al(leng)}${rowIndex + 4}:${Al(leng + 2)}${rowIndex + 4}`
+        );
+        sheet.getCell(`${Al(leng)}${rowIndex + 4}`).value = "전체 평균";
+        sheet.getCell(`${Al(leng + 3)}${rowIndex + 4}`).value = avg;
+      }
 
       for (let i = 1; i <= leng + 3; i++) {
         sheet.getColumn(i).alignment = {
@@ -313,6 +328,8 @@ export function GradeManage() {
     };
     nextId.current++;
     setStu([...stu, student]);
+    setText("");
+    setScore("");
   }
 
   function handleKeyPressAddStu(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -467,8 +484,13 @@ export function GradeManage() {
       color === "" ? "000000" : color.slice(1).toUpperCase();
     A1.style.font = {
       size: 22,
-      color: { argb: "FF" + fontColor },
       bold: true,
+    };
+    A1.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FF" + fontColor },
+      bgColor: { argb: "FF" + fontColor },
     };
 
     sheet.getCell("A2").value = "순위";
@@ -476,10 +498,21 @@ export function GradeManage() {
     sheet.getCell("C2").value = "점수";
     sheet.getCell("D2").value = "순위 변동";
 
+    sheet.getCell("A2").style.font = {
+      bold: true,
+    };
+    sheet.getCell("B2").style.font = {
+      bold: true,
+    };
+    sheet.getCell("C2").style.font = {
+      bold: true,
+    };
+    sheet.getCell("D2").style.font = {
+      bold: true,
+    };
+
     sheet.mergeCells(`D3:D${rowIndex + 3}`);
     sheet.getCell("D3").value = "ヽ（・＿・；)ノ";
-
-    let miss = 0;
 
     for (let i = 0; i < stu.length; i++) {
       const row = sheet.getRow(i + 3);
@@ -489,8 +522,6 @@ export function GradeManage() {
         row.getCell(3).value = isPercent
           ? roundToTwo(stu[i].score, maxsco)
           : Number(stu[i].score);
-      } else {
-        miss++;
       }
     }
 
@@ -504,20 +535,22 @@ export function GradeManage() {
       }
     }
 
-    let total: number = 0;
-    let exist: number = 0;
-    stu.forEach((stud) => {
-      if (stud.grade !== 0) {
-        total += Number(stud.score);
-        exist++;
-      }
-    });
-    const avg: number = isPercent
-      ? roundToTwo(total / exist, 100)
-      : roundToTwo(total / exist, maxsco);
-    sheet.mergeCells(`A${rowIndex + 4}:C${rowIndex + 4}`);
-    sheet.getCell(`A${rowIndex + 4}`).value = "전체 평균";
-    sheet.getCell(`D${rowIndex + 4}`).value = avg;
+    if (stu.length > 0) {
+      let total: number = 0;
+      let exist: number = 0;
+      stu.forEach((stud) => {
+        if (stud.grade !== 0) {
+          total += Number(stud.score);
+          exist++;
+        }
+      });
+      const avg: number = isPercent
+        ? roundToTwo(total / exist, 100)
+        : roundToTwo(total / exist, maxsco);
+      sheet.mergeCells(`A${rowIndex + 4}:C${rowIndex + 4}`);
+      sheet.getCell(`A${rowIndex + 4}`).value = "전체 평균";
+      sheet.getCell(`D${rowIndex + 4}`).value = avg;
+    }
 
     for (let i = 2; i <= rowIndex + 4; i++) {
       sheet.getRow(i).eachCell({ includeEmpty: true }, (cell) => {
@@ -594,6 +627,7 @@ export function GradeManage() {
                 placeholder="학생 이름을 입력해주세요."
                 onChange={handleChangeStuname}
                 onKeyPress={handleKeyPressAddStu}
+                value={text}
               />
             </Inputdiv>
             <Inputdiv>
@@ -603,6 +637,7 @@ export function GradeManage() {
                 placeholder="점수를 입력해주세요."
                 onChange={handleChangeInitScore}
                 onKeyPress={handleKeyPressAddStu}
+                value={score}
               />
             </Inputdiv>
           </Input>
@@ -610,7 +645,11 @@ export function GradeManage() {
         <Setfieldco2>
           <Titlediv>
             <Title>테이블 설정</Title>
-            <ColorInput type="color" onChange={handleChangeSetColor} />
+            <ColorInput
+              type="color"
+              onChange={handleChangeSetColor}
+              value={color}
+            />
           </Titlediv>
           <Line />
           <Input>
