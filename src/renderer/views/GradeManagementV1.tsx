@@ -8,7 +8,6 @@ import { FaTrash } from "react-icons/fa";
 import { RiPencilFill } from "react-icons/ri";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import InputModal from "../components/InputModal";
 
 export function GradeManage() {
   interface student {
@@ -26,11 +25,16 @@ export function GradeManage() {
   const [isPercent, setIsPercent] = useState<boolean>(false);
   const [color, setColor] = useState<string>("");
   const [stu, setStu] = useState<student[]>([]);
+  const [isChangeName, setIsChangeName] = useState<boolean>(false);
+  const [changeText, setChangeText] = useState<string>("");
+  const [isHideName, setIsHideName] = useState<boolean>(false);
   const nextId = useRef(1);
   const nextGrade = useRef(0);
+  const prevGrade = useRef(1);
 
   async function handleClickReadToExcel() {
     try {
+      setIsHideName(false);
       const result = await dialog.showOpenDialog({ properties: ["openFile"] });
       const { filePaths } = result;
       if (filePaths.length != 1) return;
@@ -49,7 +53,7 @@ export function GradeManage() {
       if (rowLength > 0) {
         handleClickClearTable();
         for (let i = 0; i <= rowLength; i++) {
-          const row = sheet.getRow(i + 3);
+          const row = sheet.getRow(i + 300);
           if (row.getCell(leng + 1).value !== null) {
             const _stud: student = {
               id: nextId.current,
@@ -75,7 +79,7 @@ export function GradeManage() {
       );
       setColor(sheet.getCell("A204").value?.toString() || "");
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
 
@@ -187,9 +191,12 @@ export function GradeManage() {
 
       for (let i = 0; i < stu.length; i++) {
         const row = sheet.getRow(i + 3);
+        const dataRow = sheet.getRow(i + 300);
         if (stu[i].grade > 0) {
           row.getCell(leng).value = stu[i].grade;
-          row.getCell(leng + 1).value = stu[i].name;
+          row.getCell(leng + 1).value = isHideName
+            ? hideName(9999, stu[i].name)
+            : stu[i].name;
           row.getCell(leng + 2).value = isPercent
             ? roundToTwo(stu[i].score, maxsco)
             : Number(stu[i].score);
@@ -197,9 +204,12 @@ export function GradeManage() {
             const preLeng = leng - 5;
             for (let j = 0; j <= rowLength; j++) {
               const prevRow = sheet.getRow(j + 3);
+              const prevDataRow = sheet.getRow(j + 300);
               if (
-                prevRow.getCell(preLeng + 1).value?.toString() === stu[i].name
+                prevDataRow.getCell(preLeng + 1).value?.toString() ===
+                stu[i].name
               ) {
+                console.log(prevDataRow.getCell(preLeng + 1).value?.toString());
                 const preGrade: number =
                   prevRow.getCell(preLeng)?.toString() !== "미응시"
                     ? Number(prevRow.getCell(preLeng))
@@ -227,6 +237,8 @@ export function GradeManage() {
             }
           }
         }
+        dataRow.getCell(leng + 1).value = stu[i].name;
+        dataRow.getCell(leng + 2).value = stu[i].score;
       }
 
       let index: number = rowIndex + 3;
@@ -370,7 +382,7 @@ export function GradeManage() {
 
   function handleClickChangeName(id: number) {
     setStu(
-      stu.map((stud) => (stud.id === id ? { ...stud, name: text } : stud))
+      stu.map((stud) => (stud.id === id ? { ...stud, name: changeText } : stud))
     );
   }
 
@@ -380,13 +392,16 @@ export function GradeManage() {
       .sort((a: student, b: student) => Number(b.score) - Number(a.score));
 
     setStu(
-      _stu.map((stud: student) => {
+      _stu.map((stud: student, index: number) => {
         nextGrade.current++;
         if (stud.score === "") {
           return { ...stud, grade: 0 };
-        } else {
-          return { ...stud, grade: nextGrade.current };
         }
+        if (index > 0 && stud.score === stu[index - 1].score) {
+          return { ...stud, grade: prevGrade.current };
+        }
+        prevGrade.current = nextGrade.current;
+        return { ...stud, grade: nextGrade.current };
       })
     );
 
@@ -401,24 +416,17 @@ export function GradeManage() {
     setStu(_stu);
   }
 
-  function handleClickHideName() {
-    if (isPercent) {
-      setStu(
-        stu.map((stud) =>
-          roundToTwo(stud.score, maxsco) < minsco
-            ? { ...stud, name: stud.name.slice(0, 1) + "**" }
-            : stud
-        )
-      );
-    } else {
-      setStu(
-        stu.map((stud) =>
-          Number(stud.score) < minsco
-            ? { ...stud, name: stud.name.slice(0, 1) + "**" }
-            : stud
-        )
-      );
+  function hideName(score: string | number, name: string): string {
+    if (score === 9999) {
+      return name.slice(0, 1) + "**";
     }
+    if (isPercent && roundToTwo(score, maxsco) < minsco) {
+      return name.slice(0, 1) + "**";
+    }
+    if (!isPercent && Number(score) < minsco) {
+      return name.slice(0, 1) + "**";
+    }
+    return name;
   }
 
   function handleChangeMinsco(e: React.ChangeEvent<HTMLInputElement>) {
@@ -456,7 +464,7 @@ export function GradeManage() {
         printArea: `A1:D${rowIndex + 4}`,
         horizontalCentered: true,
         verticalCentered: true,
-        scale: stu.length > 52 ? 80 : 100,
+        scale: stu.length > 52 ? 75 : 100,
         margins: {
           left: 0,
           right: 0,
@@ -516,13 +524,18 @@ export function GradeManage() {
 
     for (let i = 0; i < stu.length; i++) {
       const row = sheet.getRow(i + 3);
+      const dataRow = sheet.getRow(i + 300);
       if (stu[i].grade !== 0) {
         row.getCell(1).value = stu[i].grade;
-        row.getCell(2).value = stu[i].name;
+        row.getCell(2).value = isHideName
+          ? hideName(9999, stu[i].name)
+          : stu[i].name;
         row.getCell(3).value = isPercent
           ? roundToTwo(stu[i].score, maxsco)
           : Number(stu[i].score);
       }
+      dataRow.getCell(2).value = stu[i].name;
+      dataRow.getCell(3).value = stu[i].score;
     }
 
     let index: number = rowIndex + 3;
@@ -530,7 +543,7 @@ export function GradeManage() {
       if (stud.grade <= 0) {
         const row = sheet.getRow(index);
         row.getCell(1).value = "미응시";
-        row.getCell(2).value = stud.name;
+        row.getCell(2).value = hideName(9999, stud.name);
         index--;
       }
     }
@@ -693,7 +706,11 @@ export function GradeManage() {
               <SetTableButton onClick={handleClickSortByName}>
                 표 이름으로 정렬
               </SetTableButton>
-              <SetTableButton onClick={handleClickHideName}>
+              <SetTableButton
+                onClick={() => {
+                  setIsHideName(!isHideName);
+                }}
+              >
                 이름 가리기
               </SetTableButton>
               <ClearButton onClick={handleClickClearTable}>표 제거</ClearButton>
@@ -721,7 +738,9 @@ export function GradeManage() {
               {stu.map((stud) => (
                 <Tr key={stud.id}>
                   <Td>{stud.grade === 0 ? "미응시" : stud.grade}</Td>
-                  <Td>{stud.name}</Td>
+                  <Td>
+                    {isHideName ? hideName(stud.score, stud.name) : stud.name}
+                  </Td>
                   <Td>
                     {isPercent ? roundToTwo(stud.score, maxsco) : stud.score}
                   </Td>
@@ -737,7 +756,22 @@ export function GradeManage() {
           <Line />
           {stu.map((stud) => (
             <TSInput key={stud.id}>
-              <PP>{stud.name + " :"}</PP>
+              {isChangeName ? (
+                <ChangeNameInput
+                  type="text"
+                  onChange={(e) => {
+                    setChangeText(e.target.value);
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleClickChangeName(stud.id);
+                      setIsChangeName(!isChangeName);
+                    }
+                  }}
+                />
+              ) : (
+                <PP>{stud.name + " :"}</PP>
+              )}
               <AddScore
                 type="text"
                 placeholder="점수"
@@ -747,7 +781,9 @@ export function GradeManage() {
               <IconDiv>
                 <Pencil
                   size="1.25rem"
-                  onClick={() => handleClickChangeName(stud.id)}
+                  onClick={() => {
+                    setIsChangeName(!isChangeName);
+                  }}
                 />
                 <Trash onClick={() => handleClickDeleteItem(stud.id)} />
               </IconDiv>
@@ -1016,4 +1052,16 @@ const ColorInput = styled.input`
   outline: none;
   -webkit-appearance: none;
   background: transparent;
+`;
+
+const ChangeNameInput = styled.input`
+  width: 40%;
+  height: 1.4rem;
+  border: 1px solid ${(props) => props.theme.colors.brand2.main};
+  outline: none;
+  border-radius: 3px;
+  transition: border 0.2s ease-in-out;
+  &:focus {
+    border: 1px solid ${(props) => props.theme.colors.brand1.main};
+  }
 `;
