@@ -9,14 +9,14 @@ import { RiPencilFill } from "react-icons/ri";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
-export function GradeManage() {
-  interface student {
-    id: number;
-    grade: number;
-    name: string;
-    score: string;
-  }
+interface student {
+  id: number;
+  grade: number;
+  name: string;
+  score: string;
+}
 
+export function GradeManage() {
   const [text, setText] = useState<string>("");
   const [score, setScore] = useState<string>("");
   const [tableTitle, setTableTitle] = useState<string>("");
@@ -380,9 +380,9 @@ export function GradeManage() {
     setStu(stu.filter((stud) => stud.id !== id));
   }
 
-  function handleClickChangeName(id: number) {
+  function handleClickChangeName(id: number, name: string) {
     setStu(
-      stu.map((stud) => (stud.id === id ? { ...stud, name: changeText } : stud))
+      stu.map((stud) => (stud.id === id ? { ...stud, name: name } : stud))
     );
   }
 
@@ -755,43 +755,68 @@ export function GradeManage() {
           </Titlediv>
           <Line />
           {stu.map((stud) => (
-            <TSInput key={stud.id}>
-              {isChangeName ? (
-                <ChangeNameInput
-                  type="text"
-                  onChange={(e) => {
-                    setChangeText(e.target.value);
-                  }}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleClickChangeName(stud.id);
-                      setIsChangeName(!isChangeName);
-                    }
-                  }}
-                />
-              ) : (
-                <PP>{stud.name + " :"}</PP>
-              )}
-              <AddScore
-                type="text"
-                placeholder="점수"
-                value={stud.score}
-                onChange={(e) => handleChangeScore(e, stud.id)}
-              />
-              <IconDiv>
-                <Pencil
-                  size="1.25rem"
-                  onClick={() => {
-                    setIsChangeName(!isChangeName);
-                  }}
-                />
-                <Trash onClick={() => handleClickDeleteItem(stud.id)} />
-              </IconDiv>
-            </TSInput>
+            <ScoreInput
+              key={stud.id}
+              stud={stud}
+              handleChangeScore={handleChangeScore}
+              handleClickChangeName={handleClickChangeName}
+              handleClickDeleteItem={handleClickDeleteItem}
+            />
           ))}
         </TScoreDiv>
       </Field>
     </Md>
+  );
+}
+
+function ScoreInput(props: {
+  stud: student;
+  handleChangeScore: Function;
+  handleClickChangeName: Function;
+  handleClickDeleteItem: Function;
+}) {
+  const {
+    stud,
+    handleChangeScore,
+    handleClickChangeName,
+    handleClickDeleteItem,
+  } = props;
+  const [isChangeName, setIsChangeName] = useState<boolean>(false);
+  const [changeText, setChangeText] = useState<string>("");
+  return (
+    <TSInput key={stud.id}>
+      {isChangeName ? (
+        <ChangeNameInput
+          type="text"
+          onChange={(e) => {
+            setChangeText(e.target.value);
+          }}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              handleClickChangeName(stud.id, changeText);
+              setIsChangeName(!isChangeName);
+            }
+          }}
+        />
+      ) : (
+        <PP>{stud.name + " :"}</PP>
+      )}
+      <AddScore
+        type="text"
+        placeholder="점수"
+        value={stud.score}
+        onChange={(e) => handleChangeScore(e, stud.id)}
+      />
+      <IconDiv>
+        <Pencil
+          size="1.25rem"
+          onClick={() => {
+            setIsChangeName(!isChangeName);
+          }}
+        />
+        <Trash onClick={() => handleClickDeleteItem(stud.id)} />
+      </IconDiv>
+    </TSInput>
   );
 }
 
