@@ -192,11 +192,24 @@ export function GradeManage() {
       for (let i = 0; i < stu.length; i++) {
         const row = sheet.getRow(i + 3);
         const dataRow = sheet.getRow(i + 300);
+        let chgname: string = stu[i].name;
+        if (isHideName) {
+          if (isPercent) {
+            if (roundToTwo(stu[i].score, maxsco) < minsco) {
+              chgname = hideName(9999, stu[i].name);
+            } else {
+              chgname = stu[i].name;
+            }
+          }
+          if (Number(stu[i].score) < minsco) {
+            chgname = hideName(9999, stu[i].name);
+          } else {
+            chgname = stu[i].name;
+          }
+        }
         if (stu[i].grade > 0) {
           row.getCell(leng).value = stu[i].grade;
-          row.getCell(leng + 1).value = isHideName
-            ? hideName(9999, stu[i].name)
-            : stu[i].name;
+          row.getCell(leng + 1).value = chgname;
           row.getCell(leng + 2).value = isPercent
             ? roundToTwo(stu[i].score, maxsco)
             : Number(stu[i].score);
@@ -525,11 +538,24 @@ export function GradeManage() {
     for (let i = 0; i < stu.length; i++) {
       const row = sheet.getRow(i + 3);
       const dataRow = sheet.getRow(i + 300);
+      let chgname: string = stu[i].name;
+      if (isHideName) {
+        if (isPercent) {
+          if (roundToTwo(stu[i].score, maxsco) < minsco) {
+            chgname = hideName(9999, stu[i].name);
+          } else {
+            chgname = stu[i].name;
+          }
+        }
+        if (Number(stu[i].score) < minsco) {
+          chgname = hideName(9999, stu[i].name);
+        } else {
+          chgname = stu[i].name;
+        }
+      }
       if (stu[i].grade !== 0) {
         row.getCell(1).value = stu[i].grade;
-        row.getCell(2).value = isHideName
-          ? hideName(9999, stu[i].name)
-          : stu[i].name;
+        row.getCell(2).value = chgname;
         row.getCell(3).value = isPercent
           ? roundToTwo(stu[i].score, maxsco)
           : Number(stu[i].score);
